@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info">
+    <Properties>
+        <property name="LOG_DIR">logs</property>
+        <property name="pattern_file">%d{DEFAULT_NANOS} [%t] %-5level %logger{5} - %msg%n</property>
+        <property name="pattern_console">%d{DEFAULT_NANOS} [%t] %-5level %logger{5} - %msg%n</property>
+    </Properties>
+    <ThresholdFilter level="trace"/>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${pattern_console}"/>
+        </Console>
+        <RollingFile name="FileRolling" fileName="logs/log_roll.log" append="true"
+                     filePattern="logs/${date:yyyy-MM-dd}/%d{yyyy-MM-dd_HH-mm}_%i.log">
+            <PatternLayout pattern="${pattern_file}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="15 KB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="Log_File" level="trace" additivity="false">
+            <AppenderRef refs="FileRolling"/>
+        </Logger>
+        <Root level="trace">
+            <AppenderRef ref="FileRolling"/>
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
