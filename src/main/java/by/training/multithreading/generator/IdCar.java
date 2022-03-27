@@ -1,4 +1,4 @@
-package by.training.multithreading.util;
+package by.training.multithreading.generator;
 
 public class IdCar {
     private static int id = 0;

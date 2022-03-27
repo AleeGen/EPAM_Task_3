@@ -1,6 +1,7 @@
 package by.training.multithreading.entity;
 
-import by.training.multithreading.util.IdCar;
+import by.training.multithreading.exception.CustomException;
+import by.training.multithreading.generator.IdCar;
 
 
 public class Car extends Thread {
@@ -12,11 +13,16 @@ public class Car extends Thread {
         idCar = IdCar.generate();
         this.area = area;
         this.mass = mass;
+        Thread.currentThread().setName("Car" + idCar);
     }
 
     @Override
     public void run() {
-        //// TODO: 23.03.2022  
+        try {
+            Ferry.getInstance().goQueue(this);
+        } catch (CustomException e) {
+            e.printStackTrace(); //// TODO: 27.03.2022  подумать над исключениями в getInstance
+        }
     }
 
     public int getIdCar() {

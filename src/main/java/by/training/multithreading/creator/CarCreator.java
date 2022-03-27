@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class CarCreator {
     private CarCreator() throws CustomException {
         Properties data = new Properties();
         try {
-            data.load(new StringReader(PATH));
+            data.load(new FileReader(PATH));
         } catch (IOException e) {
             logger.log(Level.ERROR, "Not found file {}", PATH, e);
             throw new CustomException(e);

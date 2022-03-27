@@ -1,10 +1,10 @@
 package by.training.multithreading.entity;
 
-import by.training.multithreading.util.IdParkingSpace;
+import by.training.multithreading.generator.IdParkingSpace;
 
 public class ParkingSpace {
     private int idSpace;
-    private boolean freedom;
+    private boolean freedom;  //// TODO: 27.03.2022 наверное нужно заменить на лок 
 
     public ParkingSpace() {
         idSpace = IdParkingSpace.generate();
