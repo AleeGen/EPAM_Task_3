@@ -17,6 +17,7 @@ import java.util.Random;
 public class CarCreator {
     private static final Logger logger = LogManager.getLogger();
     private static final String PATH = ClassLoader.getSystemResource("data.properties").getPath();
+    private static final int MIN_AREA_MASS = 1;
     private static CarCreator instance;
     private List<Car> listCar;
 
@@ -46,9 +47,11 @@ public class CarCreator {
 
     private void creator(int countCar) {
         listCar = new ArrayList<>();
+        Random random = new Random();
         for (int i = 0; i < countCar; i++) {
-            Random random = new Random(1);
-            listCar.add(new Car(random.nextInt(10), random.nextInt(25)));
+            int area = random.nextInt(9) + MIN_AREA_MASS;
+            int mass = random.nextInt(24) + MIN_AREA_MASS;
+            listCar.add(new Car(area, mass));
         }
     }
 
