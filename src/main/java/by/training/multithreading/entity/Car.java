@@ -1,19 +1,24 @@
 package by.training.multithreading.entity;
 
-import by.training.multithreading.exception.CustomException;
 import by.training.multithreading.generator.IdCar;
-
-import java.util.concurrent.TimeUnit;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class Car extends Thread {
-    private int idCar;
-    private int area;
-    private int mass;
-    private State state;
 
+    private static final Logger logger = LogManager.getLogger();
 
-    public enum State {
+    private final ReentrantLock lock = new ReentrantLock();
+    private final Condition condition = lock.newCondition();
+    private final int idCar;
+    private final int area;
+    private final int mass;
+    private CarState state;
+
+    public enum CarState {
         CREATED, ON_TURN, ON_FERRY, FINISHED
     }
 
@@ -22,32 +27,39 @@ public class Car extends Thread {
         this.area = area;
         this.mass = mass;
         this.setName("Car_" + idCar);
-        state = State.CREATED;
+        state = CarState.CREATED;
     }
 
     @Override
     public void run() {
         try {
+            lock.lock();
             Turn.getInstance().goQueue(this);
-        } catch (CustomException e) {
-            e.printStackTrace();
-        }
-        while (true) { //// TODO: 30.03.2022 без этого поток не живет 
-            if (this.getCarState() == State.FINISHED) break;
-            try {
-                TimeUnit.NANOSECONDS.sleep(1);  //// FIXME: 30.03.2022 без задержки не заканчивается
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            while (this.getCarState() != CarState.FINISHED) {
+                condition.await();
             }
+        } catch (InterruptedException e) {
+            logger.error("Blocking the execution stream ", e);
+            Thread.currentThread().interrupt();
+        } finally {
+            lock.unlock();
         }
-        System.out.println("end------------> " + this.getName());
+        logger.info("{} finished", this.getName());
     }
 
-    public void setCarState(State state) {
-        this.state = state;
+    public void setCarState(CarState state) {
+        try {
+            lock.lock();
+            this.state = state;
+            if (state == CarState.FINISHED) {
+                condition.signal();
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 
-    public State getCarState() {
+    public CarState getCarState() {
         return state;
     }
 
